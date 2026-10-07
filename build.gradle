@@ -1,0 +1,26 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.myapp'
+version = '1.0-SNAPSHOT'
+
+// Ensure we compile with a modern Java version (adjust if using a different version)
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // We only include JUnit for now. Other dependencies will be added as needed.
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}
