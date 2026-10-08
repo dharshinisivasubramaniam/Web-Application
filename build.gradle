@@ -1,5 +1,10 @@
 plugins {
     id 'java'
+    id 'application'
+}
+
+application {
+    mainClass = 'com.myapp.MainServer'
 }
 
 group = 'com.myapp'
@@ -16,9 +21,11 @@ repositories {
 }
 
 dependencies {
-    // We only include JUnit for now. Other dependencies will be added as needed.
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
+    
+    // THIS IS THE MISSING PIECE:
+    implementation 'com.mysql:mysql-connector-j:8.3.0'
 }
 
 test {

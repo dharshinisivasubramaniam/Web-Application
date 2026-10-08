@@ -1,9 +1,133 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Vanilla Web App</title>
-    </head>
-    <body>
-        <h1>Hello World</h1>
-    </body>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registration</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 400px;
+        margin: 50px auto;
+        padding: 20px;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+      input {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      button {
+        width: 100%;
+        padding: 10px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      #message {
+        margin-top: 15px;
+        font-weight: bold;
+        text-align: center;
+      }
+      .error {
+        color: #dc3545;
+      }
+      .success {
+        color: #28a745;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Register Account</h2>
+
+    <form id="registerForm">
+      <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" id="name" required />
+      </div>
+      <div class="form-group">
+        <label for="phone">Phone Number:</label>
+        <input type="tel" id="phone" required />
+      </div>
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" required />
+      </div>
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" required minlength="6" />
+      </div>
+      <button type="submit">Register</button>
+    </form>
+
+    <div id="message"></div>
+
+    <script>
+      document
+        .getElementById("registerForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault(); // Stop the page from refreshing on submit
+
+          const messageDiv = document.getElementById("message");
+          messageDiv.textContent = "Registering...";
+          messageDiv.className = "";
+
+          // 1. Read the input values
+          const name = document.getElementById("name").value;
+          const phone = document.getElementById("phone").value;
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+
+          // 2. Prepare the data exactly how our Java backend expects it
+          const formData = new URLSearchParams();
+          formData.append("name", name);
+          formData.append("phone", phone);
+          formData.append("email", email);
+          formData.append("password", password);
+
+          // 3. Send the POST request to Java
+          fetch("/api/register", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: formData.toString(),
+          })
+            .then(async (response) => {
+              const text = await response.text();
+
+              // HTTP 201 means Created!
+              if (response.status === 201) {
+                messageDiv.textContent = text;
+                messageDiv.className = "success";
+                document.getElementById("registerForm").reset(); // Clear form
+              } else {
+                // This will display "Email already exists" or "Missing fields"
+                messageDiv.textContent = text;
+                messageDiv.className = "error";
+              }
+            })
+            .catch((error) => {
+              messageDiv.textContent =
+                "Network error. Is the Java server running?";
+              messageDiv.className = "error";
+            });
+        });
+    </script>
+  </body>
 </html>

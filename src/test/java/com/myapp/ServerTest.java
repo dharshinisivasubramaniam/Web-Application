@@ -1,17 +1,15 @@
 package com.myapp;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-
+import org.junit.jupiter.api.AfterEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ServerTest {
     private MainServer server;
@@ -62,6 +60,26 @@ void staticFileEndpointReturnsHtml() throws Exception {
             );
             
 }
+
+    @Test
+    void registrationEndpointReturns201() throws Exception {
+        HttpClient client = HttpClient.newHttpClient();
+        
+        // Create a unique email for every test run
+        String uniqueEmail = "newuser" + System.currentTimeMillis() + "%40test.com";
+        String formData = "name=Test+User&phone=5551234&email=" + uniqueEmail + "&password=MySecretPassword";
+        
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/api/register"))
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .POST(HttpRequest.BodyPublishers.ofString(formData))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        
+        // We expect a 201 Created status
+        assertEquals(201, response.statusCode(), "Endpoint should successfully register the user");
+    }
 
 }
 
