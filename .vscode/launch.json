@@ -1,0 +1,21 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    // { //it itself run and compile
+    //     "type" : "java",
+    //     "name" : "Debug backend (Main)",
+    //     "request" : "launch" ,
+    //     "mainClass" : "com.myapp.MainServer",
+    //     "projectName" : "Project 1"
+    // } 
+    // ,
+
+    {
+      // we will debug  and run
+      "type": "java",
+      "name": "Attach to Backend (5005)",
+      "request": "attach",
+      "hostName": "localhost",
+      "port": 5005
+    }
+]}

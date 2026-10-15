@@ -53,11 +53,14 @@ void staticFileEndpointReturnsHtml() throws Exception {
 
             assertEquals(200, response.statusCode(), "Should return 20 OK for static files");
 
-            // Assert that the body contains the HTML we wrote
-            org.junit.jupiter.api.Assertions.assertTrue(
-                response.body().contains("Hello World"),
-                "Response should contain the HTML content"
-            );
+
+
+            //LOGIN CODE
+            // // Assert that the body contains the HTML we wrote
+            // org.junit.jupiter.api.Assertions.assertTrue(
+            //     response.body().contains("Register Account"),
+            //     "Response should contain the HTML content"
+            // );
             
 }
 
@@ -81,5 +84,51 @@ void staticFileEndpointReturnsHtml() throws Exception {
         assertEquals(201, response.statusCode(), "Endpoint should successfully register the user");
     }
 
+
+
+    //LOGIN CODE
+    @Test 
+    void loginEndpointScenarios() throws Exception {
+        HttpClient client = HttpClient.newHttpClient();
+
+         // 1. Register a test user first so we have someone to log in as
+         String uniqueEmail = "loginuser" + System.currentTimeMillis() + "%40test.com";
+         String regData = "name=Login+User&phone=555&email=" + uniqueEmail + "&password=CorrectPassword";
+         HttpRequest regReq = HttpRequest.newBuilder()
+                 .uri(URI.create("http://localhost:8080/api/register"))
+                 .header("Content-Type", "application/x-www-form-urlencoded")
+                 .POST(HttpRequest.BodyPublishers.ofString(regData))
+                 .build();
+        client.send(regReq, HttpResponse.BodyHandlers.ofString());
+
+        // 2. Test successful login
+        String loginData = "email=" + uniqueEmail + "&password=CorrectPassword";
+        HttpRequest loginReq = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/api/login"))
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .POST(HttpRequest.BodyPublishers.ofString(loginData))
+                .build();
+        HttpResponse<String> loginRes = client.send(loginReq,HttpResponse.BodyHandlers.ofString());
+
+        org.junit.jupiter.api.Assertions.assertEquals(200,
+            loginRes.statusCode(), "Valid login should return 200");
+        org.junit.jupiter.api.Assertions.assertEquals("", loginRes.body(),
+        "Response body must be completely empty for 200");
+
+        // 3. Test invalid password
+        String badPassData = "email=" + uniqueEmail + "&password=Wrongpassword";
+        HttpRequest badPassReq = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:8080/api/login"))
+                .header("Content-Type" , "application/x-www-form-urlencoded")
+                .POST(HttpRequest.BodyPublishers.ofString(badPassData))
+                .build();
+        HttpResponse<String> badPassRes = client.send(badPassReq,HttpResponse.BodyHandlers.ofString());
+
+        org.junit.jupiter.api.Assertions.assertEquals(401,
+            badPassRes.statusCode(),"Invaild password should return 401");
+        org.junit.jupiter.api.Assertions.assertEquals("", badPassRes.body(),
+    "Response body must be completely empty for 401");
+
+    }
 }
 

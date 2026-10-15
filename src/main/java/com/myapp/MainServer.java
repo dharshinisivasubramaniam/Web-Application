@@ -83,6 +83,54 @@ public class MainServer {
             }
         });
 
+                // 3. Login API Endpoint
+        server.createContext("/api/login", exchange -> {
+            // Only allow POST requests
+            if (!"POST".equalsIgnoreCase(exchange.getRequestMethod())) {
+                exchange.sendResponseHeaders(405, -1);
+                return;
+            }
+
+            try {
+                // Read and parse the form data
+                String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+                Map<String, String> formData = parseFormData(body);
+
+                String email = formData.get("email");
+                String password = formData.get("password");
+
+                // Check for missing or blank fields
+                if (email == null || password == null || email.isBlank() || password.isBlank()) {
+                    exchange.sendResponseHeaders(400, -1);
+                    return;
+                }
+
+                try (Connection conn = DatabaseManager.getConnection()) {
+                    User user = UserRepository.getUserByEmail(email, conn);
+                    
+                    // Reject unknown email
+                    if (user == null) {
+                        exchange.sendResponseHeaders(401, -1);
+                        return;
+                    }
+
+                    // Hash incoming password with the user's stored salt
+                    String calculatedHash = PasswordUtil.hashPassword(password, user.passwordSalt);
+
+                    // Compare hashes safely
+                    if (calculatedHash.equals(user.passwordHash)) {
+                        exchange.sendResponseHeaders(200, -1);
+                    } else {
+                        exchange.sendResponseHeaders(401, -1);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                exchange.sendResponseHeaders(500, -1);
+            }
+        });
+
+
         // 3. Static file handler (catch-all)
         server.createContext("/", exchange -> {
             String path = exchange.getRequestURI().getPath();

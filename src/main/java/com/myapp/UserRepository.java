@@ -35,4 +35,29 @@ public class UserRepository {
             return rowsAffected > 0; // Returns true if the row was successfully inserted
         }
     }
+
+    
+    //LOGIN CODE
+        // Retrieves a user by their email, or returns null if not found
+    public static User getUserByEmail(String email, Connection conn) throws SQLException {
+        String sql = "SELECT name, phone,email, password_hash , password_salt FROM users WHERE email = ?";
+
+        try(PreparedStatement stmt = conn.prepareStatement(sql)){
+            stmt.setString(1,email);
+            try(ResultSet rs = stmt.executeQuery()){
+                if(rs.next()){
+                    // Reconstruct the User object from the database row
+                    return new User(
+                        rs.getString("name"),
+                        rs.getString("phone"),
+                        rs.getString("email"),
+                        rs.getString("password_hash"),
+                        rs.getString("password_salt")
+                    );
+                }
+                 return null; // User not found
+            }
+        }
+       
+    }
 }

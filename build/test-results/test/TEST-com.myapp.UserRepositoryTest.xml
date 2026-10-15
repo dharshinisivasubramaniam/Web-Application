@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.myapp.UserRepositoryTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-10-08T05:59:24" hostname="DESKTOP-TSV9KJM" time="0.027">
+<testsuite name="com.myapp.UserRepositoryTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-10-15T05:58:31" hostname="DESKTOP-TSV9KJM" time="0.088">
   <properties/>
-  <testcase name="testRegisterUserAndCheckEmail()" classname="com.myapp.UserRepositoryTest" time="0.027"/>
+  <testcase name="testGetUserByEmail()" classname="com.myapp.UserRepositoryTest" time="0.054"/>
+  <testcase name="testRegisterUserAndCheckEmail()" classname="com.myapp.UserRepositoryTest" time="0.032"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
